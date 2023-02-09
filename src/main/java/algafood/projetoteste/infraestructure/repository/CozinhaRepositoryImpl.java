@@ -1,36 +1,45 @@
 package algafood.projetoteste.infraestructure.repository;
 
 import algafood.projetoteste.domain.model.Cozinha;
-import algafood.projetoteste.domain.repository.CozinhaRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Component;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Component
-public class CozinhaRepositoryImpl implements CozinhaRepository {
+@Repository
+public class CozinhaRepositoryImpl {
 
-	@PersistenceContext
-	private EntityManager entityManager;
+    @PersistenceContext
+    private EntityManager entityManager;
 
-	@Override
-	public List<Cozinha> listar() {
-		return entityManager.createQuery("from Cozinha", Cozinha.class).getResultList();
-	}
+    public List<Cozinha> listar() {
+        return entityManager.createQuery("from Cozinha", Cozinha.class).getResultList();
+    }
 
-	@Override
-	public Cozinha buscar(Long id) {
-			return entityManager.find(Cozinha.class, id);
-	}
+    public Cozinha buscar(Long id) {
+        return entityManager.find(Cozinha.class, id);
+    }
 
-	@Override
-	public Cozinha salvar(Cozinha cozinha) {
-		return entityManager.merge(cozinha);
-	}
+    public List<Cozinha> consultarPorNome(String nome) {
+        return entityManager.createQuery("FROM Cozinha WHERE nome = :nome ", Cozinha.class)
+                .setParameter("nome", nome).getResultList();
+    }
 
-	@Override
-	public void remover(Long id) {
-		entityManager.remove(buscar(id));
-	}
+    public List<Cozinha> consultar(String nome) {
+        return entityManager.createQuery("select c FROM Cozinha as c inner join Restaurante as r " +
+                "on r.nome= :nome ", Cozinha.class).setParameter("nome", nome).getResultList();
+    }
+
+    public Cozinha salvar(Cozinha cozinha) {
+        return entityManager.merge(cozinha);
+    }
+
+    public void remover(Long id) {
+        var cozinha = buscar(id);
+        if (cozinha == null) throw new EmptyResultDataAccessException(1);
+        entityManager.remove(cozinha);
+    }
+
 }

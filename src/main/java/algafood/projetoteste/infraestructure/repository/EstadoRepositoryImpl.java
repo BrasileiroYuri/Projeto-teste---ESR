@@ -4,11 +4,13 @@ import algafood.projetoteste.domain.model.Estado;
 import algafood.projetoteste.domain.repository.EstadoRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import org.springframework.stereotype.Component;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Component
+@Repository
 public class EstadoRepositoryImpl implements EstadoRepository {
 
     @PersistenceContext
@@ -24,14 +26,19 @@ public class EstadoRepositoryImpl implements EstadoRepository {
         return entityManager.find(Estado.class, id);
     }
 
+    @Transactional
     @Override
     public Estado salvar(Estado estado) {
         return entityManager.merge(estado);
     }
 
+    @Transactional
     @Override
     public void remover(Long id) {
-        entityManager.remove(buscar(id));
+        Estado estado = buscar(id);
+        if (estado == null)
+            throw new EmptyResultDataAccessException(1);
+        entityManager.remove(estado);
     }
 
 }
