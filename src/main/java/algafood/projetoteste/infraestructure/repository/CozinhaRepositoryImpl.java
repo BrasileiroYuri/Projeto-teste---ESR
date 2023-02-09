@@ -38,7 +38,8 @@ public class CozinhaRepositoryImpl {
 
     public void remover(Long id) {
         var cozinha = buscar(id);
-        if (cozinha == null) throw new EmptyResultDataAccessException(1);
+        if (cozinha == null) 
+            throw new EmptyResultDataAccessException(1);
         entityManager.remove(cozinha);
     }
 
