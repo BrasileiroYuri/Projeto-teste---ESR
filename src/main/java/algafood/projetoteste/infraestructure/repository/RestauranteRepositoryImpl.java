@@ -4,14 +4,13 @@ import algafood.projetoteste.domain.model.Restaurante;
 import algafood.projetoteste.domain.repository.RestauranteRepositoryQueries;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 
 @Repository
@@ -21,31 +20,11 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
     private EntityManager entityManager;
 
     @Override
-    public List<Restaurante> findB(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) {
-        var parametros = new HashMap<String, Object>();
-        var jpql = getJpql(nome, parametros, taxaFreteFinal, taxaFreteInicial);
-        TypedQuery<Restaurante> typedQuery = entityManager.createQuery(jpql, Restaurante.class);
-        parametros.forEach(typedQuery::setParameter);
-        return typedQuery.getResultList();
-    }
-
-    private String getJpql(String nome, HashMap<String, Object> paramentos,
-                                         BigDecimal taxaFreteFinal, BigDecimal taxaFreteInicial) {
-        var jpql = new StringBuilder();
-        jpql.append("from Restaurante where 0 = 0 ");
-        if (StringUtils.hasLength(nome)) {
-            jpql.append("and nome like :nome ");
-            paramentos.put("nome", "%" + nome + "%");
-        }
-        if (taxaFreteInicial != null) {
-            jpql.append("and taxaFrete >= :taxaInicial ");
-            paramentos.put("taxaInicial", taxaFreteInicial);
-        }
-        if (taxaFreteFinal != null) {
-            jpql.append("and taxaFrete <= :taxaFinal");
-            paramentos.put("taxaFinal", taxaFreteFinal);
-        }
-        return jpql.toString();
+    public List<Restaurante> findRestaurantesByNomeAndTaxaFreteBetween(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Restaurante> criteriaQuery = criteriaBuilder.createQuery(Restaurante.class);
+        criteriaQuery.from(Restaurante.class);
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
     public List<Restaurante> listar() {

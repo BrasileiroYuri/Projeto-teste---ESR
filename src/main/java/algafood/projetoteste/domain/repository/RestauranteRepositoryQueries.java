@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RestauranteRepositoryQueries {
 
-    List<Restaurante> findB
+    List<Restaurante> findRestaurantesByNomeAndTaxaFreteBetween
             (String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal);
 
 }
