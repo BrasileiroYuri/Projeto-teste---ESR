@@ -1,18 +1,21 @@
 package algafood.projetoteste.domain.repository;
 
 import algafood.projetoteste.domain.model.Restaurante;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-public interface RestauranteRepository {
+@Repository
+public interface RestauranteRepository extends JpaRepository<Restaurante, Long>, RestauranteRepositoryQueries {
 
-    List<Restaurante> listar();
+    Restaurante consultarPorNome(String nome);
 
-    Restaurante buscar(Long id);
+    /*  Restaurante findByNomeAndTaxaFreteBetween
+                (String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal); */
 
-    Restaurante salvar(Restaurante restaurante);
-
-    void remover  (Long id);
-
+    List<Restaurante> findByCozinhaNomeContainingAndTaxaFreteBetween
+    (String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal);
 
 }

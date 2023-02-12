@@ -23,12 +23,12 @@ public class RestauranteService {
         if (cozinha.isEmpty())
             throw new EntidadeNaoEncontradaException("Cozinha de id %d não encontrada.");
         restaurante.setCozinha(cozinha.get());
-        return restauranteRepository.salvar(restaurante);
+        return restauranteRepository.save(restaurante);
     }
 
     public void remover(Long id) {
         try {
-            restauranteRepository.remover(id);
+            restauranteRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new EntidadeNaoEncontradaException("Restaurante inexistente.");
         } catch (DataIntegrityViolationException e) {

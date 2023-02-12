@@ -21,9 +21,11 @@ public class CidadeService {
     private EstadoRepository estadoRepository;
 
     public Cidade salvar(Cidade cidade) {
-        Estado estado = estadoRepository.buscar(cidade.getEstado().getId());
+        Long estadoId = cidade.getEstado().getId();
+        Estado estado = estadoRepository.findById(estadoId).get();
         if (estado == null)
-            throw new EntidadeNaoEncontradaException("O objeto aninhando Estado não existe.");
+            throw new EntidadeNaoEncontradaException(
+                    String.format("Não existe Estado com id %d.", estadoId));
         cidade.setEstado(estado);
         return cidadeRepository.save(cidade);
     }
@@ -32,9 +34,11 @@ public class CidadeService {
         try {
             cidadeRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new EntidadeNaoEncontradaException("Cidade inexistente");
+            throw new EntidadeNaoEncontradaException(
+                    String.format("Cidade de id %d inexistente", id));
         } catch (DataIntegrityViolationException e) {
-            throw new EntidadeEmUsoException("Cidade não pode ser removida");
+            throw new EntidadeEmUsoException(
+                    String.format("Cidade de id %d pode ser removida", id));
         }
     }
 

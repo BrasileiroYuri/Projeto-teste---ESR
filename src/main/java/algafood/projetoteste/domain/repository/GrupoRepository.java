@@ -1,17 +1,10 @@
 package algafood.projetoteste.domain.repository;
 
 import algafood.projetoteste.domain.model.Grupo;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-public interface GrupoRepository {
-
-    List<Grupo> listar();
-
-    Grupo buscar(Long id);
-
-    Grupo salvar(Grupo grupo);
-
-    void remover(Long id);
+@Repository
+public interface GrupoRepository extends JpaRepository<Grupo, Long> {
 
 }
