@@ -4,11 +4,14 @@ import algafood.projetoteste.domain.model.Restaurante;
 import algafood.projetoteste.domain.repository.RestauranteRepositoryQueries;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 
 @Repository
@@ -19,11 +22,30 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
 
     @Override
     public List<Restaurante> findB(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) {
-        var jpql = "from Restaurante where cozinha.nome like :nome and taxaFrete between :taxaInicial and :taxaFinal";
-        return entityManager.createQuery(jpql, Restaurante.class)
-                .setParameter("nome", "%" + nome + "%")
-                .setParameter("taxaInicial", taxaFreteInicial)
-                .setParameter("taxaFinal", taxaFreteFinal).getResultList();
+        var parametros = new HashMap<String, Object>();
+        var jpql = getJpql(nome, parametros, taxaFreteFinal, taxaFreteInicial);
+        TypedQuery<Restaurante> typedQuery = entityManager.createQuery(jpql.toString(), Restaurante.class);
+        parametros.forEach(typedQuery::setParameter);
+        return typedQuery.getResultList();
+    }
+
+    private static StringBuilder getJpql(String nome, HashMap<String, Object> paramentos,
+                                         BigDecimal taxaFreteFinal, BigDecimal taxaFreteInicial) {
+        var jpql = new StringBuilder();
+        jpql.append("from Restaurante where 0 = 0 ");
+        if (StringUtils.hasLength(nome)) {
+            jpql.append("and nome like :nome ");
+            paramentos.put("nome", "%" + nome + "%");
+        }
+        if (taxaFreteInicial != null) {
+            jpql.append("and taxaFrete >= :taxaInicial ");
+            paramentos.put("taxaInicial", taxaFreteInicial);
+        }
+        if (taxaFreteFinal != null) {
+            jpql.append("and taxaFrete <= :taxaFinal");
+            paramentos.put("taxaFinal", taxaFreteFinal);
+        }
+        return jpql;
     }
 
     public List<Restaurante> listar() {
