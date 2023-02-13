@@ -27,12 +27,15 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
         CriteriaQuery<Restaurante> criteriaQuery = criteriaBuilder.createQuery(Restaurante.class);
         Root<Restaurante> root = criteriaQuery.from(Restaurante.class);
         var predicates = new ArrayList<Predicate>();
-        if (StringUtils.hasLength(nome))
+        if (StringUtils.hasText(nome)) {
             predicates.add(criteriaBuilder.like(root.get("nome"), "%" + nome + "%"));
-        if (taxaFreteInicial != null)
+        }
+        if (taxaFreteInicial != null) {
             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial));
-        if (taxaFreteFinal != null)
+        }
+        if (taxaFreteFinal != null) {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal));
+        }
         criteriaQuery.where(predicates.toArray(new Predicate[0]));
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
@@ -45,9 +48,23 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
         Root<Restaurante> restauranteRoot = criteriaQuery.from(Restaurante.class);
         Join<Object, Object> cozinhaRoot = restauranteRoot.join("cozinha");
         Predicate nomePredicate = criteriaBuilder.like(cozinhaRoot.get("nome"), "%" + nome + "%");
-        Predicate taxaInicialPredicate = criteriaBuilder.greaterThanOrEqualTo(restauranteRoot.get("taxaFrete"), taxaFreteInicial);
-        Predicate taxaFinalPredicate = criteriaBuilder.lessThanOrEqualTo(restauranteRoot.get("taxaFrete"), taxaFreteFinal);
+        Predicate taxaInicialPredicate = criteriaBuilder
+                .greaterThanOrEqualTo(restauranteRoot.get("taxaFrete"), taxaFreteInicial);
+        Predicate taxaFinalPredicate = criteriaBuilder
+                .lessThanOrEqualTo(restauranteRoot.get("taxaFrete"), taxaFreteFinal);
         criteriaQuery.where(nomePredicate, taxaInicialPredicate, taxaFinalPredicate);
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
+    @Override
+    public List<?> find(String nome) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<?> criteriaQuery = criteriaBuilder.createQuery();
+        Root<Restaurante> restauranteRoot = criteriaQuery.from(Restaurante.class);
+        Join<Object, Object> cozinhaRoot = restauranteRoot.join("cozinha");
+        Predicate restauranteNome = criteriaBuilder.like(restauranteRoot.get("nome"), "%" + nome + "%");
+        Predicate cozinhaNome = criteriaBuilder.like(cozinhaRoot.get("nome"), "%" + nome + "%");
+        criteriaQuery.where(restauranteNome, cozinhaNome);
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
