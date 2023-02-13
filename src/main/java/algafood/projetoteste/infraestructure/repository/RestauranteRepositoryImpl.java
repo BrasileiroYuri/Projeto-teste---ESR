@@ -6,6 +6,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,15 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
     private EntityManager entityManager;
 
     @Override
-    public List<Restaurante> findRestaurantesByNomeAndTaxaFreteBetween(String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) {
+    public List<Restaurante> findRestaurantesByNomeAndTaxaFreteBetween(
+            String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Restaurante> criteriaQuery = criteriaBuilder.createQuery(Restaurante.class);
-        criteriaQuery.from(Restaurante.class);
+        Root<Restaurante> root = criteriaQuery.from(Restaurante.class);
+        Predicate nomePredicate = criteriaBuilder.like(root.get("nome"), "%" + nome + "%");
+        Predicate taxaInicialPredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial);
+        Predicate taxaFinalPredicate = criteriaBuilder.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal);
+        criteriaQuery.where(nomePredicate, taxaInicialPredicate, taxaFinalPredicate);
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
