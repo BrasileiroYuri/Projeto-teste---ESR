@@ -4,10 +4,7 @@ import algafood.projetoteste.domain.model.Restaurante;
 import algafood.projetoteste.domain.repository.RestauranteRepositoryQueries;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +27,20 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
         Predicate nomePredicate = criteriaBuilder.like(root.get("nome"), "%" + nome + "%");
         Predicate taxaInicialPredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("taxaFrete"), taxaFreteInicial);
         Predicate taxaFinalPredicate = criteriaBuilder.lessThanOrEqualTo(root.get("taxaFrete"), taxaFreteFinal);
+        criteriaQuery.where(nomePredicate, taxaInicialPredicate, taxaFinalPredicate);
+        return entityManager.createQuery(criteriaQuery).getResultList();
+    }
+
+    @Override
+    public List<Restaurante> findRestaurantesByCozinhaNomeAndTaxaFreteBetween(
+            String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Restaurante> criteriaQuery = criteriaBuilder.createQuery(Restaurante.class);
+        Root<Restaurante> restauranteRoot = criteriaQuery.from(Restaurante.class);
+        Join<Object, Object> cozinhaRoot = restauranteRoot.join("cozinha");
+        Predicate nomePredicate = criteriaBuilder.like(cozinhaRoot.get("nome"), "%" + nome + "%");
+        Predicate taxaInicialPredicate = criteriaBuilder.greaterThanOrEqualTo(restauranteRoot.get("taxaFrete"), taxaFreteInicial);
+        Predicate taxaFinalPredicate = criteriaBuilder.lessThanOrEqualTo(restauranteRoot.get("taxaFrete"), taxaFreteFinal);
         criteriaQuery.where(nomePredicate, taxaInicialPredicate, taxaFinalPredicate);
         return entityManager.createQuery(criteriaQuery).getResultList();
     }

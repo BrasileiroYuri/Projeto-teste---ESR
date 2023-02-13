@@ -10,4 +10,7 @@ public interface RestauranteRepositoryQueries {
     List<Restaurante> findRestaurantesByNomeAndTaxaFreteBetween
             (String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal);
 
+    List<Restaurante> findRestaurantesByCozinhaNomeAndTaxaFreteBetween(
+            String nome, BigDecimal taxaFreteInicial, BigDecimal taxaFreteFinal);
+
 }
