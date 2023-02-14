@@ -68,6 +68,12 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
+    @Override
+    public List<String> byCozinhaNome(String nome) {
+        return entityManager.createQuery("select nome from Restaurante where cozinha.nome like :nome",
+                        String.class).setParameter("nome", "%"+ nome + "%").getResultList();
+    }
+
     public List<Restaurante> listar() {
         return entityManager.createQuery("FROM Restaurante", Restaurante.class).getResultList();
     }

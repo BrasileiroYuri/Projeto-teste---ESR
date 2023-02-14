@@ -15,4 +15,6 @@ public interface RestauranteRepositoryQueries {
 
     List<?> find(String nome);
 
+    List<String> byCozinhaNome(String nome);
+
 }
