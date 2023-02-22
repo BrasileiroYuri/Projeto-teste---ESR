@@ -46,17 +46,11 @@ public class RestauranteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Restaurante newRestaurante) {
-        try {
-            var restaurante = restauranteRepository.findById(id);
-            if (restaurante.isPresent()) {
-                copyProperties(newRestaurante, restaurante.get(), "id");
-                return ResponseEntity.ok(restauranteService.salvar(restaurante.get()));
-            }
-            return ResponseEntity.notFound().build();
-        } catch (EntidadeNaoEncontradaException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public Restaurante atualizar(@PathVariable Long id, @RequestBody Restaurante newRestaurante) {
+        var restaurante = restauranteRepository.findOrFail(id);
+        copyProperties(newRestaurante, restaurante,
+                "id", "formasPagamento", "endereco", "dataCadastro", "produtos");
+        return restauranteService.salvar(restaurante);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -75,7 +69,7 @@ public class RestauranteController {
         var restauranteAtual = restauranteRepository.findById(id);
         if (restauranteAtual.isEmpty()) return ResponseEntity.notFound().build();
         merge(campos, restauranteAtual.get());
-        return atualizar(id, restauranteAtual.get());
+        return ResponseEntity.ok(atualizar(id, restauranteAtual.get()));
     }
 
     private void merge(Map<String, Object> campos, Restaurante restaurante) {

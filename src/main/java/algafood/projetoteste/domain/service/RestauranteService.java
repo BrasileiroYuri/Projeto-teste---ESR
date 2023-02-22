@@ -1,39 +1,29 @@
 package algafood.projetoteste.domain.service;
 
-import algafood.projetoteste.domain.exception.EntidadeEmUsoException;
-import algafood.projetoteste.domain.exception.EntidadeNaoEncontradaException;
+import algafood.projetoteste.domain.model.Cozinha;
 import algafood.projetoteste.domain.model.Restaurante;
 import algafood.projetoteste.domain.repository.CozinhaRepository;
 import algafood.projetoteste.domain.repository.RestauranteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RestauranteService {
 
-    @Autowired
-    private RestauranteRepository restauranteRepository;
-    @Autowired
-    private CozinhaRepository cozinhaRepository;
+    private final RestauranteRepository restauranteRepository;
+
+    private final CozinhaRepository cozinhaRepository;
 
     public Restaurante salvar(Restaurante restaurante) {
-        var cozinha = cozinhaRepository.findById(restaurante.getCozinha().getId());
-        if (cozinha.isEmpty())
-            throw new EntidadeNaoEncontradaException("Cozinha de id %d não encontrada.");
-        restaurante.setCozinha(cozinha.get());
+        Cozinha cozinha = cozinhaRepository
+                .findOrFail(restaurante.getCozinha().getId());
+        restaurante.setCozinha(cozinha);
         return restauranteRepository.save(restaurante);
     }
 
     public void remover(Long id) {
-        try {
-            restauranteRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntidadeNaoEncontradaException("Restaurante inexistente.");
-        } catch (DataIntegrityViolationException e) {
-            throw new EntidadeEmUsoException("Este recurso não pode ser excluído.");
-        }
+        restauranteRepository.deleteById(id);
     }
 
 }

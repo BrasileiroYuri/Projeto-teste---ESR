@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,6 +23,6 @@ public class Cozinha {
 
     @JsonIgnore
     @OneToMany(mappedBy = "cozinha")
-    private List<Restaurante> restaurantes;
+    private List<Restaurante> restaurantes = new ArrayList<>();
 
 }

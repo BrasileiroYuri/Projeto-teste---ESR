@@ -17,4 +17,6 @@ public interface RestauranteRepositoryQueries {
 
     List<String> byCozinhaNome(String nome);
 
+    List<Restaurante> findByNomeAndFreeShipping(String nome);
+
 }

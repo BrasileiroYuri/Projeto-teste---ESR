@@ -9,4 +9,8 @@
         <query>from Restaurante where nome like concat('%', :nome,'%') and cozinha.id = :id</query>
     </named-query>
 
+<!--    <named-query name="Restaurante.findAll">-->
+<!--        <query>from Restaurante r join fetch r.cozinha left join fetch r.formasPagamento</query>-->
+<!--    </named-query>-->
+
 </entity-mappings>
