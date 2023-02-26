@@ -20,14 +20,16 @@ public class CustomJpaRepositoryImpl<T, ID> extends SimpleJpaRepository<T, ID>
 
     @Override
     public Optional<T> findFirst(String nome) {
-        var query = String.format("from %s", getDomainClass().getName());
-        return Optional.ofNullable(entityManager.createQuery
-                (query, getDomainClass()).setMaxResults(1).getSingleResult());
+        String query = String.format("from %s", getDomainClass().getName());
+        T singleResult = entityManager.createQuery(
+                query, getDomainClass()).setMaxResults(1).getSingleResult();
+        return Optional.ofNullable(singleResult);
     }
 
     @Override
     public T findOrFail(ID id) {
-        String message = String.format("No %s for id %d", getDomainClass().getSimpleName(), id);
+        String message = String.format("No %s for id %d",
+                getDomainClass().getSimpleName(), id);
         return findById(id).orElseThrow(
                 () -> new EntidadeNaoEncontradaException(message));
     }

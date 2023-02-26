@@ -4,17 +4,20 @@ import algafood.projetoteste.domain.exception.EntidadeEmUsoException;
 import algafood.projetoteste.domain.exception.EntidadeNaoEncontradaException;
 import algafood.projetoteste.domain.model.Cozinha;
 import algafood.projetoteste.domain.repository.CozinhaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static java.lang.String.format;
+
 @Service
+@RequiredArgsConstructor
 public class CozinhaService {
 
-    @Autowired
-    public CozinhaRepository cozinhaRepository;
+    public static final String NO_ENTITY_FOR_ID = "No entity for id %d";
+    public final CozinhaRepository cozinhaRepository;
 
     @Transactional
     public Cozinha salvar(Cozinha cozinha) {
@@ -27,11 +30,16 @@ public class CozinhaService {
             cozinhaRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new EntidadeNaoEncontradaException(
-                    String.format("Cozinha de código %d não foi encontrada.", id));
+                    format("Cozinha de código %d não foi encontrada.", id));
         } catch (DataIntegrityViolationException e) {
             throw new EntidadeEmUsoException(
-                    String.format("Cozinha de código %d está em uso.", id));
+                    format("Cozinha de código %d está em uso.", id));
         }
+    }
+
+    public Cozinha buscarOuFalhar(Long id) {
+        return cozinhaRepository.findById(id).orElseThrow(() ->
+                new EntidadeNaoEncontradaException(format(NO_ENTITY_FOR_ID, id)));
     }
 
 }

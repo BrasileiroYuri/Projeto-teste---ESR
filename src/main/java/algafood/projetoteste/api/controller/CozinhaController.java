@@ -1,25 +1,26 @@
 package algafood.projetoteste.api.controller;
 
+import algafood.projetoteste.api.processor.PatchProcessor;
 import algafood.projetoteste.domain.model.Cozinha;
 import algafood.projetoteste.domain.repository.CozinhaRepository;
 import algafood.projetoteste.domain.service.CozinhaService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @RestController
 @RequestMapping("/cozinhas")
+@RequiredArgsConstructor
 public class CozinhaController {
 
-    @Autowired
-    private CozinhaRepository cozinhaRepository;
-    @Autowired
-    private CozinhaService cozinhaService;
+    private final CozinhaRepository cozinhaRepository;
+    private final CozinhaService cozinhaService;
+    private final PatchProcessor patchProcessor;
 
     @GetMapping
     public List<Cozinha> listar() {
@@ -27,10 +28,8 @@ public class CozinhaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        var cozinha = cozinhaRepository.findById(id);
-        if (cozinha.isPresent()) return ResponseEntity.ok(cozinha);
-        return ResponseEntity.notFound().build();
+    public Cozinha buscarPorId(@PathVariable Long id) {
+        return cozinhaService.buscarOuFalhar(id);
     }
 
     @PostMapping
@@ -39,18 +38,24 @@ public class CozinhaController {
         return cozinhaService.salvar(cozinha);
     }
 
-    @PutMapping("/{cozinhaId}")
-    public ResponseEntity<?> atualizar(@PathVariable Long cozinhaId, @RequestBody Cozinha newCozinha) {
-        var cozinha = cozinhaRepository.findById(cozinhaId);
-        if (cozinha.isPresent()) return ResponseEntity.notFound().build();
+    @PutMapping("/{id}")
+    public Cozinha atualizar(@PathVariable Long id, @RequestBody Cozinha newCozinha) {
+        Cozinha cozinha = cozinhaService.buscarOuFalhar(id);
         copyProperties(newCozinha, cozinha, "id");
-        return ResponseEntity.status(HttpStatus.OK).body(cozinhaService.salvar(cozinha.get()));
+        return cozinhaService.salvar(cozinha);
     }
 
-    @DeleteMapping("/{cozinhaId}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void remover(@PathVariable Long cozinhaId) {
-        cozinhaService.remover(cozinhaId);
+    public void remover(@PathVariable Long id) {
+        cozinhaService.remover(id);
+    }
+
+    @PatchMapping("/{id}")
+    public Cozinha atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos) {
+        Cozinha cozinha = cozinhaService.buscarOuFalhar(id);
+        patchProcessor.merge(campos, cozinha);
+        return cozinhaService.salvar(cozinha);
     }
 
 }

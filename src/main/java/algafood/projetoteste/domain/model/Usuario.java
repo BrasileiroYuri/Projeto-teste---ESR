@@ -14,6 +14,7 @@ import java.util.List;
 public class Usuario {
 
     @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

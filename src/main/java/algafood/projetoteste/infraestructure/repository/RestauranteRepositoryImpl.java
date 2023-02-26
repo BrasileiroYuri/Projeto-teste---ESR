@@ -80,18 +80,18 @@ public class RestauranteRepositoryImpl implements RestauranteRepositoryQueries {
         Root<Restaurante> restauranteRoot = criteriaQuery.from(Restaurante.class);
         Join<Object, Object> cozinhaRoot = restauranteRoot.join("cozinha");
         Predicate restauranteNome = criteriaBuilder
-                .like(restauranteRoot.get("nome"), "%" + nome + "%");
+                    .like(restauranteRoot.get("nome"), "%" + nome + "%");
         Predicate cozinhaNome = criteriaBuilder
-                .like(cozinhaRoot.get("nome"), "%" + nome + "%");
+                    .like(cozinhaRoot.get("nome"), "%" + nome + "%");
         criteriaQuery.where(restauranteNome, cozinhaNome);
         return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
     @Override
-    public List<String> byCozinhaNome(String nome) {
+    public List<String> restauranteNomeByCozinhaNome(String nome) {
         return entityManager.createQuery(
-                        "select nome from Restaurante where cozinha.nome like :nome", String.class)
-                        .setParameter("nome", "%" + nome + "%").getResultList();
+                "select nome from Restaurante where cozinha.nome like :nome", String.class)
+                .setParameter("nome", "%" + nome + "%").getResultList();
     }
 
     public List<Restaurante> listar() {

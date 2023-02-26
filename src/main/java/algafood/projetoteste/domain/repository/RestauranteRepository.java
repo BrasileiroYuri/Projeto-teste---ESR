@@ -13,7 +13,8 @@ public interface RestauranteRepository extends CustomJpaRepository<Restaurante, 
         RestauranteRepositoryQueries, JpaSpecificationExecutor<Restaurante> {
 
     @Override
-    @Query("FROM Restaurante r JOIN FETCH r.cozinha LEFT JOIN FETCH r.formasPagamento")
+    @Query("FROM Restaurante r JOIN FETCH r.cozinha")
+//            " LEFT JOIN FETCH r.formasPagamento")
     List<Restaurante> findAll();
 
     Restaurante consultarPorNome(String nome);

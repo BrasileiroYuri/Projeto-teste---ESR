@@ -9,27 +9,27 @@ import java.math.BigDecimal;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Produto {
+public class ItemPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(nullable = false)
-    private String nome;
+    private Integer quantidade;
 
-    @Column(nullable = false)
-    private String descricao;
+    private BigDecimal precoUnitario;
 
-    @Column(nullable = false)
-    private BigDecimal preco;
+    private BigDecimal precoTotal;
 
-    @Column(nullable = false)
-    private Boolean ativo;
+    private String observacao;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Restaurante restaurante;
+    private Pedido pedido;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Produto produto;
 
 }
