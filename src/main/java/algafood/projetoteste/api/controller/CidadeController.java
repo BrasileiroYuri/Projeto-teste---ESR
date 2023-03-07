@@ -4,6 +4,8 @@ import algafood.projetoteste.api.processor.PatchProcessor;
 import algafood.projetoteste.domain.model.Cidade;
 import algafood.projetoteste.domain.repository.CidadeRepository;
 import algafood.projetoteste.domain.service.CidadeService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +36,12 @@ public class CidadeController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Cidade adicionar(@RequestBody Cidade cidade) {
+    public Cidade adicionar(@RequestBody @Valid Cidade cidade) {
         return cidadeService.salvar(cidade);
     }
 
     @PutMapping("/{id}")
-    public Cidade atualizar(@PathVariable Long id, @RequestBody Cidade newCidade) {
+    public Cidade atualizar(@PathVariable Long id, @RequestBody @Valid Cidade newCidade) {
         var cidade = cidadeService.buscarOuFalhar(id);
         copyProperties(newCidade, cidade, "id");
         return cidadeService.salvar(cidade);
@@ -51,9 +53,9 @@ public class CidadeController {
     }
 
     @PatchMapping("{id}")
-    public Cidade atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos) {
+    public Cidade atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos, HttpServletRequest request) {
         Cidade cidade = cidadeService.buscarOuFalhar(id);
-        patchProcessor.merge(campos, cidade);
+        patchProcessor.merge(campos, cidade, request);
         return cidadeService.salvar(cidade);
     }
 

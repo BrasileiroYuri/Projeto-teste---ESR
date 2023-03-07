@@ -3,6 +3,7 @@ package algafood.projetoteste.domain.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
 @Data

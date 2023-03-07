@@ -1,4 +1,4 @@
-package algafood.projetoteste;
+package algafood.projetoteste.api.exceptionhandler;
 
 import algafood.projetoteste.domain.model.Cozinha;
 import algafood.projetoteste.domain.model.Restaurante;

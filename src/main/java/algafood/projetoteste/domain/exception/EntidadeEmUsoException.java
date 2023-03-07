@@ -9,5 +9,9 @@ public class EntidadeEmUsoException extends RuntimeException {
         super(message);
     }
 
+    public EntidadeEmUsoException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
 

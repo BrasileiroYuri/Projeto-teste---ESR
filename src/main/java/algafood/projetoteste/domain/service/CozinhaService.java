@@ -16,8 +16,9 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class CozinhaService {
 
-    public static final String NO_ENTITY_FOR_ID = "No entity for id %d";
-    public final CozinhaRepository cozinhaRepository;
+    private static final String COZINHA_NAO_ENCONTRADA = "Cozinha de código %d não foi encontrada.";
+    private static final String COZINHA_EM_USO = "Cozinha de código %d está em uso.";
+    private final CozinhaRepository cozinhaRepository;
 
     @Transactional
     public Cozinha salvar(Cozinha cozinha) {
@@ -28,18 +29,17 @@ public class CozinhaService {
     public void remover(Long id) {
         try {
             cozinhaRepository.deleteById(id);
+            cozinhaRepository.flush();
         } catch (EmptyResultDataAccessException e) {
-            throw new EntidadeNaoEncontradaException(
-                    format("Cozinha de código %d não foi encontrada.", id));
+            throw new EntidadeNaoEncontradaException(format(COZINHA_NAO_ENCONTRADA, id));
         } catch (DataIntegrityViolationException e) {
-            throw new EntidadeEmUsoException(
-                    format("Cozinha de código %d está em uso.", id));
+            throw new EntidadeEmUsoException(format(COZINHA_EM_USO, id));
         }
     }
 
     public Cozinha buscarOuFalhar(Long id) {
-        return cozinhaRepository.findById(id).orElseThrow(() ->
-                new EntidadeNaoEncontradaException(format(NO_ENTITY_FOR_ID, id)));
+        return cozinhaRepository.findById(id).orElseThrow(
+                () -> new EntidadeNaoEncontradaException(format(COZINHA_NAO_ENCONTRADA, id)));
     }
 
 }

@@ -3,6 +3,7 @@ package algafood.projetoteste.api.controller;
 import algafood.projetoteste.domain.model.Estado;
 import algafood.projetoteste.domain.repository.EstadoRepository;
 import algafood.projetoteste.domain.service.EstadoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class EstadoController {
     }
 
     @PutMapping("/{id}")
-    public Estado atualizar(@PathVariable Long id, @RequestBody Estado newEstado) {
+    public Estado atualizar(@PathVariable Long id, @RequestBody @Valid Estado newEstado) {
         Estado estado = estadoService.buscarOuFalhar(id);
         copyProperties(newEstado, estado, "id");
         return estadoService.salvar(estado);
@@ -38,7 +39,7 @@ public class EstadoController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Estado adicionar(@RequestBody Estado estado) {
+    public Estado adicionar(@RequestBody @Valid Estado estado) {
         return estadoService.salvar(estado);
     }
 

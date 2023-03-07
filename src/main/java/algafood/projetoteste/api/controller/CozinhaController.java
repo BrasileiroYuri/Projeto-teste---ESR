@@ -4,6 +4,7 @@ import algafood.projetoteste.api.processor.PatchProcessor;
 import algafood.projetoteste.domain.model.Cozinha;
 import algafood.projetoteste.domain.repository.CozinhaRepository;
 import algafood.projetoteste.domain.service.CozinhaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +35,12 @@ public class CozinhaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Cozinha adicionar(@RequestBody Cozinha cozinha) {
+    public Cozinha adicionar(@RequestBody @Valid Cozinha cozinha) {
         return cozinhaService.salvar(cozinha);
     }
 
     @PutMapping("/{id}")
-    public Cozinha atualizar(@PathVariable Long id, @RequestBody Cozinha newCozinha) {
+    public Cozinha atualizar(@PathVariable Long id, @RequestBody @Valid Cozinha newCozinha) {
         Cozinha cozinha = cozinhaService.buscarOuFalhar(id);
         copyProperties(newCozinha, cozinha, "id");
         return cozinhaService.salvar(cozinha);
@@ -54,7 +55,7 @@ public class CozinhaController {
     @PatchMapping("/{id}")
     public Cozinha atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos) {
         Cozinha cozinha = cozinhaService.buscarOuFalhar(id);
-        patchProcessor.merge(campos, cozinha);
+        //patchProcessor.merge(campos, cozinha, request);
         return cozinhaService.salvar(cozinha);
     }
 

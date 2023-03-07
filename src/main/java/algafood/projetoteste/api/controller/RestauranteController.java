@@ -4,6 +4,8 @@ import algafood.projetoteste.api.processor.PatchProcessor;
 import algafood.projetoteste.domain.model.Restaurante;
 import algafood.projetoteste.domain.repository.RestauranteRepository;
 import algafood.projetoteste.domain.service.RestauranteService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +36,12 @@ public class RestauranteController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Restaurante adicionar(@RequestBody Restaurante restaurante) {
+    public Restaurante adicionar(@RequestBody @Valid Restaurante restaurante) {
         return restauranteService.salvar(restaurante);
     }
 
     @PutMapping("/{id}")
-    public Restaurante atualizar(@PathVariable Long id, @RequestBody Restaurante newRestaurante) {
+    public Restaurante atualizar(@PathVariable Long id, @RequestBody @Valid Restaurante newRestaurante) {
         Restaurante restaurante = restauranteService.buscarOuFalhar(id);
         copyProperties(newRestaurante, restaurante,
                 "id", "formasPagamento", "endereco", "dataCadastro", "produtos");
@@ -53,9 +55,10 @@ public class RestauranteController {
     }
 
     @PatchMapping("/{id}")
-    public Restaurante atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos) {
+    public Restaurante atualizarParcial(@PathVariable Long id, @RequestBody Map<String, Object> campos,
+                                        HttpServletRequest request) {
         var restaurante = restauranteService.buscarOuFalhar(id);
-        patchProcessor.merge(campos, restaurante);
+        patchProcessor.merge(campos, restaurante, request);
         return restauranteService.salvar(restaurante);
     }
 
