@@ -1,12 +1,1 @@
-# Projeto de teste.
-
-| FSFSDFDF  | FSF |
-|:---------:|-----|
-|   FSFS    |     |
-
-
-> DSFSD
-> 
-> FSFSDF
->
-> FDSFDS
+#Projeto de teste e estudo. 
