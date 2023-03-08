@@ -1,7 +1,7 @@
 package algafood.projetoteste.domain.model;
 
-import algafood.projetoteste.Groups;
-import algafood.projetoteste.domain.IdValidation;
+import algafood.projetoteste.core.validation.Groups;
+import algafood.projetoteste.core.constraints.IdValidation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

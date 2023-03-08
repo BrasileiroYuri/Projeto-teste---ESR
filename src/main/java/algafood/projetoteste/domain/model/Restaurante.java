@@ -1,6 +1,7 @@
 package algafood.projetoteste.domain.model;
 
-import algafood.projetoteste.Groups;
+import algafood.projetoteste.core.constraints.Multiplo;
+import algafood.projetoteste.core.validation.Groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -34,6 +35,8 @@ public class Restaurante {
     private String nome;
 
     @PositiveOrZero
+    @NotNull
+    @Multiplo(numero = 5)
     @Column(nullable = false)
     private BigDecimal taxaFrete;
 

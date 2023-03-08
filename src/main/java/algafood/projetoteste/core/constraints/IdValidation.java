@@ -1,6 +1,7 @@
-package algafood.projetoteste.domain;
+package algafood.projetoteste.core.constraints;
 
 import jakarta.validation.Constraint;
+import jakarta.validation.OverridesAttribute;
 import jakarta.validation.Payload;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +18,9 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = {})
 public @interface IdValidation {
 
-    String message() default "{}";
+    @OverridesAttribute(constraint = NotNull.class, name = "message")
+    @OverridesAttribute(constraint = Min.class, name = "message")
+    String message() default "{0} Não deve ser nula nem menor que 1.";
 
     Class<?>[] groups() default {};
 

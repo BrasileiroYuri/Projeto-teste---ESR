@@ -1,4 +1,4 @@
-package algafood.projetoteste;
+package algafood.projetoteste.core.validation;
 
 public class Groups {
 

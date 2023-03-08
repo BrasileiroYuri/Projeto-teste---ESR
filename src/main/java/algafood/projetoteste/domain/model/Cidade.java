@@ -1,6 +1,6 @@
 package algafood.projetoteste.domain.model;
 
-import algafood.projetoteste.Groups;
+import algafood.projetoteste.core.validation.Groups;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
