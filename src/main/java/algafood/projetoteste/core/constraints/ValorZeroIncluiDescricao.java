@@ -1,6 +1,6 @@
 package algafood.projetoteste.core.constraints;
 
-import algafood.projetoteste.core.validation.MultiploValidator;
+import algafood.projetoteste.core.validation.ValorZeroIncluiDescricaoValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -9,17 +9,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.FIELD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = {MultiploValidator.class})
-public @interface Multiplo {
+@Constraint(validatedBy = {ValorZeroIncluiDescricaoValidator.class})
+public @interface ValorZeroIncluiDescricao {
 
-    String message() default "";
+    String descricaoObrigatoria();
+
+    String message() default "{}";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
-    int numero() default 0;
+    String descricaoField();
+
+    String valorField();
 
 }

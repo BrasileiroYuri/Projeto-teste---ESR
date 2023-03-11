@@ -1,6 +1,7 @@
 package algafood.projetoteste.domain.model;
 
 import algafood.projetoteste.core.constraints.Multiplo;
+import algafood.projetoteste.core.constraints.ValorZeroIncluiDescricao;
 import algafood.projetoteste.core.validation.Groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -19,10 +20,11 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Data
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ValorZeroIncluiDescricao(valorField = "taxaFrete",
+        descricaoField = "nome", descricaoObrigatoria = "- Frete Grátis.")
 public class Restaurante {
 
     @Id
@@ -48,7 +50,7 @@ public class Restaurante {
     @Column(nullable = false, columnDefinition = "datetime")
     private LocalDateTime dataCadastro;
 
-//    @JsonIgnoreProperties("hibernateLazyInitializer")
+    //    @JsonIgnoreProperties("hibernateLazyInitializer")
     @Valid
     @NotNull
     @ManyToOne//(fetch = FetchType.LAZY)

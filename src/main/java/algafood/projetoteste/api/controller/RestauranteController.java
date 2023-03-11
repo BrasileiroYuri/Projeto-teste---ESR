@@ -1,6 +1,7 @@
 package algafood.projetoteste.api.controller;
 
 import algafood.projetoteste.api.processor.PatchProcessor;
+import algafood.projetoteste.domain.exception.ValidacaoException;
 import algafood.projetoteste.domain.model.Restaurante;
 import algafood.projetoteste.domain.repository.RestauranteRepository;
 import algafood.projetoteste.domain.service.RestauranteService;
@@ -8,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +25,7 @@ public class RestauranteController {
 
     private final RestauranteRepository restauranteRepository;
     private final RestauranteService restauranteService;
+    private final SmartValidator smartValidator;
     private final PatchProcessor patchProcessor;
 
     @GetMapping
@@ -59,7 +63,15 @@ public class RestauranteController {
                                         HttpServletRequest request) {
         var restaurante = restauranteService.buscarOuFalhar(id);
         patchProcessor.merge(campos, restaurante, request);
+        validate(restaurante);
         return restauranteService.salvar(restaurante);
+    }
+
+    private void validate(Restaurante restaurante) {
+        String simpleName = restaurante.getClass().getSimpleName();
+        BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(restaurante, simpleName);
+        smartValidator.validate(restaurante, bindingResult);
+        if (bindingResult.hasErrors()) throw new ValidacaoException(bindingResult);
     }
 
 }

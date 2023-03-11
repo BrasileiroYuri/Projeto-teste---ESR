@@ -28,6 +28,7 @@ public class RestauranteServiceTest {
     public void deveSalvarObjetoComSucesso_QuandoObjetoEstiverValido() {
         restauranteService.salvar(restauranteMock);
         verify(restauranteService).salvar(restauranteMock);
+
     }
 
 }

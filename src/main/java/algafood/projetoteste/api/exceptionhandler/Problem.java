@@ -22,14 +22,15 @@ public class Problem {
     private String userMessage;
     private LocalDateTime timeStamp;
 
-    private List<Field> fields;
+    private List<Object> objects;
 
     @Getter
     @Builder
-    public static class Field {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static class Object {
         private String name;
         private String userMessag;
-        private Object flag;
+        private java.lang.Object flag;
 
     }
 

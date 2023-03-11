@@ -3,6 +3,7 @@ package algafood.projetoteste.api.exceptionhandler;
 import algafood.projetoteste.domain.exception.EntidadeEmUsoException;
 import algafood.projetoteste.domain.exception.EntidadeNaoEncontradaException;
 import algafood.projetoteste.domain.exception.NegocioException;
+import algafood.projetoteste.domain.exception.ValidacaoException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.PropertyBindingException;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,7 +39,7 @@ import static algafood.projetoteste.api.exceptionhandler.ProblemType.*;
 @RequiredArgsConstructor
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final String ERRO_INTERNO = "Ocorreu um erro interno no sistema. Tente novamente e se o erro"
+    private static final String ERRO_INTERNO = "Ocorreu um erro interno no sistema. Tente novamente e se o erro "
             + "persistir, entre em contato com o administrador do sistema.";
 
     private final MessageSource messageSource;
@@ -88,25 +91,39 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ResponseEntity<Object> handleSQLIntegrityConstraintViolation(
             SQLIntegrityConstraintViolationException ex, HttpStatus status, WebRequest request) {
-        String detail = String.format("%s", ex.getMessage());
-        Problem problem = createProblemBuilder(status, VIOLACAO_DE_INTEGRIDADE_DE_DADOS, detail).build();
+        Problem problem = createProblemBuilder(status, VIOLACAO_DE_INTEGRIDADE_DE_DADOS, ex.getMessage()).build();
         return handleExceptionInternal(ex, problem, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        List<Problem.Field> problemFields = ex.getFieldErrors().stream().map(fieldError -> {
+        return getProblemObjects(ex, ex.getBindingResult(), status, headers, request);
+    }
 
-            String message = messageSource.getMessage(fieldError, LocaleContextHolder.getLocale());
-            return Problem.Field.builder()
-                    .name(fieldError.getField())
-                    .userMessag(fieldError.getDefaultMessage())
-                    .flag(fieldError.getRejectedValue())
+    @ExceptionHandler(ValidacaoException.class)
+    public ResponseEntity<Object> handleValidacao(ValidacaoException ex, WebRequest request) {
+        return getProblemObjects(ex, ex.getBindingResult(), HttpStatus.BAD_REQUEST, new HttpHeaders(), request);
+    }
+
+    private ResponseEntity<Object> getProblemObjects(
+            Exception ex, BindingResult bindingResult, HttpStatusCode status, HttpHeaders headers, WebRequest request) {
+        List<Problem.Object> objects = bindingResult.getAllErrors().stream().map(objectError -> {
+            String message = messageSource.getMessage(objectError, LocaleContextHolder.getLocale());
+            String name = objectError.getObjectName();
+            Object flag = null;
+            if (objectError instanceof FieldError) {
+                name = ((FieldError) objectError).getField();
+                flag = ((FieldError) objectError).getRejectedValue();
+            }
+            return Problem.Object.builder()
+                    .name(name)
+                    .userMessag(message)
+                    .flag(flag)
                     .build();
         }).toList();
-
-        Problem problem = createProblemBuilder(status, DADOS_INVALIDOS, ERRO_INTERNO).fields(problemFields).build();
+        Problem problem = createProblemBuilder(status, DADOS_INVALIDOS, ERRO_INTERNO)
+                .objects(objects).build();
         return handleExceptionInternal(ex, problem, headers, status, request);
     }
 
