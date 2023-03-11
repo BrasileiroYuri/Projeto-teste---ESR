@@ -20,7 +20,7 @@ public @interface IdValidation {
 
     @OverridesAttribute(constraint = NotNull.class, name = "message")
     @OverridesAttribute(constraint = Min.class, name = "message")
-    String message() default "{0} Não deve ser nula nem menor que 1.";
+    String message() default "Deve ser maior que 0 e não deve ser nula";
 
     Class<?>[] groups() default {};
 
