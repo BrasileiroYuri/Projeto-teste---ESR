@@ -6,7 +6,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -20,7 +20,7 @@ public class Problem {
     private String detail;
 
     private String userMessage;
-    private LocalDateTime timeStamp;
+    private OffsetDateTime timeStamp;
 
     private List<Object> objects;
 
@@ -36,7 +36,7 @@ public class Problem {
 
     public static Problem getDefaultProblem(HttpStatusCode statusCode) {
         String reasonPhrase = HttpStatus.valueOf(statusCode.value()).getReasonPhrase();
-        return builder().timeStamp(LocalDateTime.now()).title(reasonPhrase).status(statusCode.value()).build();
+        return builder().timeStamp(OffsetDateTime.now()).title(reasonPhrase).status(statusCode.value()).build();
     }
 
 }

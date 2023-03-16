@@ -17,6 +17,10 @@ public interface RestauranteRepository extends CustomJpaRepository<Restaurante, 
 //            " LEFT JOIN FETCH r.formasPagamento")
     List<Restaurante> findAll();
 
+//    @Override
+//    @Query("From Restaurante r join r.cozinha where r.id = :id")
+//    Optional<Restaurante> findById(Long id);
+
     Restaurante consultarPorNome(String nome);
 
     List<Restaurante> findByCozinhaId(Long id);

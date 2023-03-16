@@ -1,0 +1,8 @@
+{
+  "nome": "Comida boa Tailandesa",
+  "taxaFrete": 20.00,
+  "cozinha": {
+    "id": 1
+  }
+}
+

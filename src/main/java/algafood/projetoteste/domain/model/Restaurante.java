@@ -1,9 +1,7 @@
 package algafood.projetoteste.domain.model;
 
-import algafood.projetoteste.core.constraints.Multiplo;
 import algafood.projetoteste.core.constraints.ValorZeroIncluiDescricao;
 import algafood.projetoteste.core.validation.Groups;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -16,7 +14,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +22,7 @@ import java.util.List;
 @Entity
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ValorZeroIncluiDescricao(valorField = "taxaFrete",
-        descricaoField = "nome", descricaoObrigatoria = "- Frete Grátis.")
+        descricaoField = "nome", descricaoObrigatoria = "- Frete Grátis")
 public class Restaurante {
 
     @Id
@@ -38,19 +36,18 @@ public class Restaurante {
 
     @PositiveOrZero
     @NotNull
-    @Multiplo(numero = 5)
+//    @Multiplo(numero = 5)
     @Column(nullable = false)
     private BigDecimal taxaFrete;
 
     @UpdateTimestamp
     @Column(nullable = false, columnDefinition = "datetime")
-    private LocalDateTime dataAtualizacao;
+    private OffsetDateTime dataAtualizacao;
 
     @CreationTimestamp
     @Column(nullable = false, columnDefinition = "datetime")
-    private LocalDateTime dataCadastro;
+    private OffsetDateTime dataCadastro;
 
-    //    @JsonIgnoreProperties("hibernateLazyInitializer")
     @Valid
     @NotNull
     @ManyToOne//(fetch = FetchType.LAZY)
@@ -58,18 +55,15 @@ public class Restaurante {
     @ConvertGroup(to = Groups.CozinhaId.class)
     private Cozinha cozinha;
 
-    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "restaurante_forma_pagamento",
             joinColumns = @JoinColumn(name = "restaurante_id"),
             inverseJoinColumns = @JoinColumn(name = "forma_pagamento_id"))
     private List<FormaPagamento> formasPagamento = new ArrayList<>();
 
-    @JsonIgnore
     @Embedded
     private Endereco endereco;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "restaurante")
     private List<Produto> produtos;
 

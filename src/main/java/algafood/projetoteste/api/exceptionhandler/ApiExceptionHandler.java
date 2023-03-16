@@ -29,7 +29,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,8 +39,8 @@ import static algafood.projetoteste.api.exceptionhandler.ProblemType.*;
 @RequiredArgsConstructor
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final String ERRO_INTERNO = "Ocorreu um erro interno no sistema. Tente novamente e se o erro "
-            + "persistir, entre em contato com o administrador do sistema.";
+    private static final String ERRO_INTERNO = "Ocorreu um erro interno no sistema."
+    + " Tente novamente e se o erro persistir, entre em contato com o administrador do sistema.";
 
     private final MessageSource messageSource;
 
@@ -70,8 +70,8 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleUncaught(Exception ex, WebRequest request) {
-        HttpStatusCode status = HttpStatus.INTERNAL_SERVER_ERROR;
         ex.printStackTrace();
+        HttpStatusCode status = HttpStatus.INTERNAL_SERVER_ERROR;
         Problem problem = createProblemBuilder(status, ERRO_DE_SISTEMA, ERRO_INTERNO).build();
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
     }
@@ -208,11 +208,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         String reasonPhrase = HttpStatus.valueOf(statusCode.value()).getReasonPhrase();
         if (body == null) {
             body = Problem.builder().
-                    timeStamp(LocalDateTime.now())
+                    timeStamp(OffsetDateTime.now())
                     .title(reasonPhrase).status(statusCode.value()).userMessage(ERRO_INTERNO).build();
         } else if (body instanceof String) {
             body = Problem.builder()
-                    .timeStamp(LocalDateTime.now()).
+                    .timeStamp(OffsetDateTime.now()).
                     title((String) body).status(statusCode.value()).userMessage(ERRO_INTERNO).build();
         }
         return super.handleExceptionInternal(ex, body, headers, statusCode, request);
@@ -220,7 +220,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private Problem.ProblemBuilder createProblemBuilder(HttpStatusCode status, ProblemType problemType, String detail) {
         return Problem.builder().status(status.value()).type(problemType.getUri()).title(problemType.getTitle())
-                .detail(detail).timeStamp(LocalDateTime.now());
+                .detail(detail).timeStamp(OffsetDateTime.now());
     }
 
     private String joinPath(List<JsonMappingException.Reference> references) {

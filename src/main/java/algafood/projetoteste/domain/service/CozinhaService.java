@@ -1,5 +1,6 @@
 package algafood.projetoteste.domain.service;
 
+import algafood.projetoteste.domain.exception.CozinhaNaoEncontradaException;
 import algafood.projetoteste.domain.exception.EntidadeEmUsoException;
 import algafood.projetoteste.domain.exception.EntidadeNaoEncontradaException;
 import algafood.projetoteste.domain.model.Cozinha;
@@ -39,7 +40,7 @@ public class CozinhaService {
 
     public Cozinha buscarOuFalhar(Long id) {
         return cozinhaRepository.findById(id).orElseThrow(
-                () -> new EntidadeNaoEncontradaException(format(COZINHA_NAO_ENCONTRADA, id)));
+                () -> new CozinhaNaoEncontradaException(format(COZINHA_NAO_ENCONTRADA, id)));
     }
 
 }

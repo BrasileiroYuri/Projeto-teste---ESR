@@ -3,10 +3,11 @@ package algafood.projetoteste.domain.service;
 import algafood.projetoteste.domain.exception.EntidadeNaoEncontradaException;
 import algafood.projetoteste.domain.model.Cozinha;
 import algafood.projetoteste.domain.model.Restaurante;
-import algafood.projetoteste.domain.repository.CozinhaRepository;
 import algafood.projetoteste.domain.repository.RestauranteRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static java.lang.String.format;
 
@@ -17,17 +18,25 @@ public class RestauranteService {
     public static final String NO_ENTITY_FOR_ID = "No entity for id %d";
 
     private final RestauranteRepository restauranteRepository;
-    private final CozinhaRepository cozinhaRepository;
     private final CozinhaService cozinhaService;
 
+    @Transactional
     public Restaurante salvar(Restaurante restaurante) {
-        Cozinha cozinha = cozinhaService.buscarOuFalhar(restaurante.getCozinha().getId());
+        Long id = restaurante.getCozinha().getId();
+        Cozinha cozinha = cozinhaService.buscarOuFalhar(id);
         restaurante.setCozinha(cozinha);
+        restauranteRepository.count();
         return restauranteRepository.save(restaurante);
     }
 
+    @Transactional
     public void remover(Long id) {
-        restauranteRepository.deleteById(id);
+        try {
+            restauranteRepository.deleteById(id);
+            restauranteRepository.flush();
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntidadeNaoEncontradaException("");
+        }
     }
 
     public Restaurante buscarOuFalhar(Long id) {
